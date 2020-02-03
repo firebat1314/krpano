@@ -13,12 +13,22 @@
 	<link rel="stylesheet" href="/assets/js/swiper/swiper.min.css">
 	<link rel="stylesheet" href="/assets/css/style.css">
 
-
 </head>
 
 <body>
 	<div id="app" v-cloak>
 		<div class="desktop">
+			<div id="pano" class="pano">
+				<noscript>
+					<table style="width:100%;height:100%;">
+						<tr style="valign:middle;">
+							<td>
+								<div style="text-align:center;">ERROR:<br /><br />Javascript not activated<br /><br /></div>
+							</td>
+						</tr>
+					</table>
+				</noscript>
+			</div>
 			<div class="back-button">
 				<img src="./assets/imgs/img_1_13.png" draggable="false">
 				<span>返回</span>
@@ -29,7 +39,7 @@
 			</div>
 			<div class="bottom-tools" :class="{'hide':!showSlides}">
 				<div class="bottom-tools-button-list">
-					<div class="item" @click="showSlides = !showSlides">
+					<div class="item" @click="showSlides = !showSlides" :class="{'active':showSlides}">
 						<img src="./assets/imgs/img_1_4.png" draggable="false">
 					</div>
 					<div class="item">
@@ -44,7 +54,7 @@
 					<div class="item">
 						<img src="./assets/imgs/img_1_7.png" draggable="false">
 					</div>
-					<div class="item">
+					<div class="item" @click="showProduct = !showProduct" :class="{'active':showProduct}">
 						<img src="./assets/imgs/img_1_8.png" draggable="false">
 					</div>
 				</div>
@@ -59,17 +69,6 @@
 					</swiper>
 				</div>
 			</div>
-		</div>
-		<div id="pano" class="pano">
-			<noscript>
-				<table style="width:100%;height:100%;">
-					<tr style="valign:middle;">
-						<td>
-							<div style="text-align:center;">ERROR:<br /><br />Javascript not activated<br /><br /></div>
-						</td>
-					</tr>
-				</table>
-			</noscript>
 		</div>
 		<div id="box" style="top: 80px;">
 			<ul></ul>
@@ -116,6 +115,7 @@
 			data: function () {
 				return {
 					showSlides: true,
+					showProduct: false,
 					selectSlide: 0,
 					swiperOption: {
 						grabCursor: true,
@@ -134,12 +134,6 @@
 						dec: '1咖啡缝额放电饭锅电饭锅电饭锅童咖啡缝额放电饭锅电饭锅电饭锅电饭锅儿童咖啡缝额放电饭锅电饭锅电饭锅电饭锅儿童咖啡缝额放电饭锅电啡缝额放电饭锅电饭锅电饭锅电饭锅儿童咖啡缝额放电饭锅电饭锅电饭锅电饭锅儿童',
 						url: 'www.234234.com',
 						i_url: 'http://tour.xs.weapi.org/m/pano/02046abbe2c24d7585b8d58e060a2b46'
-					}, {
-						img: './assets/imgs/img_1_8.png',
-						title: '1尔特瑞特瑞特人股份恢复规划1',
-						dec: '1咖啡缝额放电饭锅电饭锅电饭锅童咖啡缝额放电饭锅电饭锅电饭锅电饭锅儿童咖啡缝额放电饭锅电饭锅电饭锅电饭锅儿童咖啡缝额放电饭锅电啡缝额放电饭锅电饭锅电饭锅电饭锅儿童咖啡缝额放电饭锅电饭锅电饭锅电饭锅儿童',
-						url: 'www.234234.com',
-						i_url: 'http://tour.xs.weapi.org/m/pano/02046abbe2c24d7585b8d58e060a2b46'
 					}]
 				}
 			},
@@ -151,7 +145,38 @@
 			},
 			mounted: function () {
 				var _this = this;
-
+				$.ajax({
+					type: "POST",
+					url: 'http://pano.test.weapi.org/panoajax?ugi=panugi&action=selectPanoList&moduleid=aeac70c2f4ad43748c2ff69ba79b0f2c&panoramicid=afc71dc7764c45beb7af22e241b2b368',
+					dataType: "jsonp",
+					xhrFields: {
+						withCredentials: true
+					},
+					async: true,
+					crossDomain: true,
+					success: function (res) {
+						var urlSearchId = GetQueryString("id");
+						if (res.code === "A00006") {
+							var arr = [];
+							for (var i = 0; i < res.scenes.length; i++) {
+								var item = res.scenes[i];
+								if (urlSearchId) {
+									if (item.url.indexOf(urlSearchId) > -1) {
+										_this.selectSlide = i;
+									}
+								};
+								arr.push({
+									img: item.image,
+									title: item.title,
+									i_url: item.url,
+									url: '',
+									dec: ''
+								})
+							}
+							_this.swiperSlides = arr;
+						}
+					}
+				});
 			},
 		})
 
@@ -161,7 +186,7 @@
 		function loaded() {
 			// myScroll = new iScroll('wrapper');
 		}
-		document.addEventListener('touchmove', function (e) {
+		/* document.addEventListener('touchmove', function (e) {
 			if ($(e.target).parents(".touchable").length > 0)
 				return;
 
@@ -186,7 +211,7 @@
 				$("body").removeClass("vr_fullscreen");
 				autoPanoSize(false);
 			}
-		}
+		} */
 
 	</script>
 	<script>
@@ -228,7 +253,7 @@
 		}
 
 		embedpano({
-			swf: "http://pano.test.weapi.org/assets/pano/krpano.swf",
+			swf: "http://pano.test.weapi.org/statics/pano/krpano.swf",
 			xml: "http://pano.test.weapi.org/pano/afc71dc7764c45beb7af22e241b2b368/tour.xml?r=" + Math.random(),
 			target: "pano",
 			html5: "auto",
@@ -329,7 +354,7 @@
 			})
 		}) */
 
-		function displayit(n) {
+		/* function displayit(n) {
 			for (i = 0; i < 4; i++) {
 				if (i == n) {
 					var id = 'menu_list' + n;
@@ -346,15 +371,15 @@
 					}
 				}
 			}
-		}
+		} */
 
-		function closeall() {
+		/* function closeall() {
 			var count = document.getElementById("top_menu").getElementsByTagName("ul").length;
 			for (i = 0; i < count; i++) {
 				document.getElementById("top_menu").getElementsByTagName("ul").item(i).style.display = 'none';
 			}
 			document.getElementById("plug-wrap").style.display = 'none';
-		}
+		} */
 
 	</script>
 

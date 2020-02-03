@@ -20,7 +20,8 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 16px;
 	color: #FFFFFF;
-	background-color: #000000;
+	background: url(../imgs/banner3.png) no-repeat center center;
+	background-size: cover;
 }
 
 .skip {
@@ -222,8 +223,8 @@ em {
 /* —————————————————— app —————————————————— */
 #app {
 	height: 100%;
-	width: 100%;
-	position: relative;
+	width: 100%;  position: absolute;
+    top: 0;
 }
 
 [v-cloak] {
@@ -292,7 +293,7 @@ em {
 }
 
 .bottom-tools.hide{
-	bottom: -115px;
+	bottom: -130px;
 }
 .bottom-tools .bottom-tools-button-list {
 	display: flex;
@@ -314,6 +315,9 @@ em {
 .bottom-tools .bottom-tools-button-list .item:hover {
 	opacity: 1;
 }
+.bottom-tools .bottom-tools-button-list .item.active{
+	opacity: 1;
+}
 
 
 .bottom-tools-slides {
@@ -324,8 +328,8 @@ em {
 }
 
 .bottom-tools-slides .swiper-container .swiper-slide {
-	width: 120px;
-	height: 84px;
+	width: 140px;
+	height: 100px;
 	background: #e0e0e0;
 	display: -webkit-box;
 	display: -ms-flexbox;
@@ -349,6 +353,9 @@ em {
 .bottom-tools-slides .swiper-container .swiper-slide .inner-slide {
 	width: 100%;
 	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .bottom-tools-slides .swiper-container .swiper-slide.active {
@@ -365,8 +372,6 @@ em {
 .bottom-tools-slides .swiper-container .swiper-slide img {
 	max-width: 100%;
 	max-height: 100%;
-	width: 100%;
-	height: 100%;
 }
 
 .bottom-tools-slides .swiper-container .swiper-slide .title {
@@ -382,6 +387,7 @@ em {
 	white-space: nowrap;
 	font-size: 12px;
 	background: rgba(0, 0, 0, 0.3);
+	box-sizing: border-box;
 }
 
 /* —————————————————— end —————————————————— */
