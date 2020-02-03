@@ -1,0 +1,387 @@
+@-ms-viewport {
+	width: device-width;
+}
+
+@media only screen and (min-device-width: 800px) {
+	html {
+		overflow: hidden;
+	}
+}
+
+html {
+	height: 100%;
+}
+
+body {
+	height: 100%;
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	color: #FFFFFF;
+	background-color: #000000;
+}
+
+.skip {
+	position: fixed;
+	text-align: center;
+	height: 40px;
+	top: 0px;
+	z-index: 9999999;
+	width: 100%;
+	font-size: 13px;
+}
+
+.skip a {
+	display: block;
+	line-height: 40px;
+}
+
+em {
+	display: block;
+	overflow: hidden;
+	border: 10px solid #06a;
+	border-color: #404450 transparent;
+	border-width: 10px 10px 0 10px;
+	position: absolute;
+	left: 50%;
+	top: 100%;
+	margin-left: -6px;
+}
+
+.marqueebox {
+	position: fixed;
+	top: 0px;
+	z-index: 9001;
+	color: #000;
+	width: 100%;
+	height: 30px;
+	border-top: 1px #94999e solid;
+	box-shadow: 0 2px 0 rgba(255, 255, 255, 0.3);
+	color: #fff;
+	font-size: 14px;
+	line-height: 30px;
+	background-image: -moz-linear-gradient(top, #00FF00, #FF0000);
+	/*火狐*/
+	background: -o-linear-gradient(top, #00FF00 0%, red 100%);
+	/*Opera*/
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #42414F), color-stop(1, #646B73));
+	/*Chrome*/
+	;
+}
+
+#wrapper {
+	position: relative;
+	z-index: 1;
+	height: 200px;
+	/* Desired element height */
+}
+
+.pano {
+	width: 100%;
+	height: 100%;
+}
+
+/* —————————————————— end —————————————————— */
+/* —————————————————— vr_fullscreen —————————————————— */
+
+.vr_fullscreen .panotop {
+	display: none;
+}
+
+.vr_fullscreen .panobottom {
+	display: none;
+}
+
+.vr_fullscreen .qrcodebox {
+	display: none;
+}
+
+.vr_fullscreen .pano {
+	margin-top: 0;
+}
+
+/* —————————————————— end —————————————————— */
+
+/* —————————————————— productshow —————————————————— */
+
+#productshow_mask {
+	position: fixed;
+	display: none;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0.85;
+	z-index: 9990;
+}
+
+#productshow {
+	position: absolute;
+	display: none;
+	top: 0;
+	left: 0;
+	height: 500px;
+	max-width: 500px;
+	min-width: 300px;
+	z-index: 9999;
+	color: #FFF;
+	bottom: 0;
+	right: 0;
+	margin: auto;
+	width: 50%;
+	border-radius: 5px;
+	background-color: rgba(0, 0, 0, .7);
+}
+
+#productshow .close {
+	position: absolute;
+	right: 1.2rem;
+	top: 1.2rem;
+	font-size: 2.6rem;
+}
+
+#productshow .productInfo {
+	padding: 0;
+	max-height: 100%;
+	height: 100%;
+	width: 100%
+}
+
+#productshow .productInfo dt {
+	width: 80%;
+	height: 30%;
+	padding: 0;
+	margin: 0 auto;
+	margin-top: 80px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+	background-image: url(/mframework/img/default-articleimg.jpg);
+}
+
+#productshow .productInfo dd {
+	margin: 0;
+	padding: 1rem;
+}
+
+#productshow .productInfo dd.title {
+	text-align: center;
+}
+
+#productshow .productInfo dd.op {
+	text-align: center;
+}
+
+#productshow .productInfo dd.detail {
+	height: 75%;
+	text-align: left;
+	font-size: 1.5rem;
+	line-height: 1.5rem;
+	overflow-y: scroll;
+	padding-bottom: 50px;
+}
+
+#productshow .productInfo dd.detail::-webkit-scrollbar {
+	/*滚动条整体样式*/
+	width: 8px;
+	/*高宽分别对应横竖滚动条的尺寸*/
+	height: 1px;
+}
+
+#productshow .productInfo dd.detail::-webkit-scrollbar-thumb {
+	/*滚动条里面小方块*/
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+	background: #535353;
+}
+
+#productshow .productInfo dd.detail::-webkit-scrollbar-track {
+	/*滚动条里面轨道*/
+	-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+	border-radius: 10px;
+}
+
+#productshow .productInfo dd.detail img {
+	max-width: 100%;
+	height: auto !important;
+	margin-top: 1rem;
+}
+
+#productshow .productInfo dd.detail * {
+	max-width: 100%;
+	padding: 2px;
+}
+
+#productshow .productInfo dd.detail>* {
+	margin: 0 auto;
+}
+
+/* —————————————————— end —————————————————— */
+/* —————————————————— app —————————————————— */
+#app {
+	height: 100%;
+	width: 100%;
+	position: relative;
+}
+
+[v-cloak] {
+	display: none;
+}
+
+.desktop {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	color: #fff;
+	z-index: 100000000;
+	user-select: none;
+}
+
+.back-button {
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	top: 30px;
+	left: 50px;
+	cursor: pointer;
+	transition: opacity 400ms;
+}
+
+.back-button:hover {
+	opacity: .8;
+}
+
+.back-button img {
+	height: 24px;
+	margin-right: 8px;
+}
+
+.right-fullscreen-site {
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	right: 40px;
+	top: 70px;
+}
+
+.right-fullscreen-site img {
+	width: 60px;
+	margin-bottom: 8px;
+	cursor: pointer;
+	opacity: .8;
+	transition: opacity 400ms;
+
+}
+
+.right-fullscreen-site img:hover {
+	opacity: 1;
+}
+
+.bottom-tools {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	left: 0;
+	padding: 30px;
+	transition: bottom 400ms;
+}
+
+.bottom-tools.hide{
+	bottom: -115px;
+}
+.bottom-tools .bottom-tools-button-list {
+	display: flex;
+
+}
+
+.bottom-tools .bottom-tools-button-list .item {
+	cursor: pointer;
+	opacity: .8;
+	transition: opacity 400ms;
+	width: 60px;
+}
+
+.bottom-tools .bottom-tools-button-list .item img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.bottom-tools .bottom-tools-button-list .item:hover {
+	opacity: 1;
+}
+
+
+.bottom-tools-slides {
+	position: relative;
+	height: 100%;
+	margin-top: 10px;
+	overflow: hidden;
+}
+
+.bottom-tools-slides .swiper-container .swiper-slide {
+	width: 120px;
+	height: 84px;
+	background: #e0e0e0;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+	-webkit-box-pack: center;
+	-ms-flex-pack: center;
+	justify-content: center;
+	position: relative;
+	-webkit-transition: 300ms;
+	transition: 300ms;
+	-webkit-transform: scale(0.9);
+	transform: scale(0.9);
+	overflow: hidden;
+	border: 2px solid transparent;
+	cursor: pointer;
+}
+
+.bottom-tools-slides .swiper-container .swiper-slide .inner-slide {
+	width: 100%;
+	height: 100%;
+}
+
+.bottom-tools-slides .swiper-container .swiper-slide.active {
+	/* -webkit-transform: scale(1);
+	transform: scale(1);
+	border-radius: 5px; */
+	border: 2px solid #ffffff;
+}
+
+.bottom-tools-slides .swiper-container .swiper-slide.active .title:hover {
+	color: #FB0606;
+}
+
+.bottom-tools-slides .swiper-container .swiper-slide img {
+	max-width: 100%;
+	max-height: 100%;
+	width: 100%;
+	height: 100%;
+}
+
+.bottom-tools-slides .swiper-container .swiper-slide .title {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	color: #ffffff;
+	text-align: center;
+	padding: 6px 10px;
+	width: 100%;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	font-size: 12px;
+	background: rgba(0, 0, 0, 0.3);
+}
+
+/* —————————————————— end —————————————————— */
