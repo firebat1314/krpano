@@ -37,6 +37,20 @@
 				<img @click="toggleFullscreen" src="./assets/imgs/img_1_9.png" draggable="false">
 				<img src="./assets/imgs/img_1_10.png" draggable="false">
 			</div>
+			<div class="popup" :class="{visible:showHotspotcontent}">
+				<div class="close" @click="showHotspotcontent = !showHotspotcontent">
+					<img src="./assets/imgs/img_2_2.png" alt="关闭" title="关闭">
+				</div>
+				<div class="title">
+					{{hotspotcontent.title}}
+				</div>
+				<div class="text-wrap">
+					<swiper :options="swiperOptionText">
+						<swiper-slide v-html="hotspotcontent.content"></swiper-slide>
+						<div class="swiper-scrollbar" slot="scrollbar"></div>
+					</swiper>
+				</div>
+			</div>
 			<div class="bottom-tools" :class="{'hide':!showSlides}">
 				<div class="bottom-tools-button-list">
 					<div class="item" @click="showSlides = !showSlides" :class="{'active':showSlides}">
@@ -48,10 +62,10 @@
 					<div @click="nextView" class="item">
 						<img src="./assets/imgs/img_1_5.png" draggable="false">
 					</div>
-					<div class="item">
+					<div @click="playsoundHandle" class="item">
 						<img src="./assets/imgs/img_1_6.png" draggable="false">
 					</div>
-					<div class="item">
+					<div @click="playsoundHandle" class="item">
 						<img src="./assets/imgs/img_1_7.png" draggable="false">
 					</div>
 					<div class="item" @click="showProduct = !showProduct" :class="{'active':showProduct}">
@@ -63,7 +77,7 @@
 						<swiper-slide :class="{active:selectSlide==index}" v-for="(slide, index) in swiperSlides" :key="index">
 							<div class="inner-slide" @click="clickSlide(index)">
 								<img :src="slide.img" :alt="slide.title">
-								<div class="title" @click.stop="selectSlide==index?showDec=true:null">{{slide.title}}</div>
+								<div class="title" @click.stop="selectSlide==index?showHotspotcontent=true:null">{{slide.title}}</div>
 							</div>
 						</swiper-slide>
 					</swiper>
@@ -82,21 +96,6 @@
 			<div id="jx_box_close"></div>
 		</div> -->
 
-		<div id="productshow_mask"></div>
-		<div id="productshow">
-			<div class="close"><i class="am-icon-close"></i></div>
-			<!-- <div> -->
-			<dl class="productInfo touchable">
-				<dt></dt>
-				<dd class="title"></dd>
-				<dd class="op">
-					<a href="#" class="am-btn am-btn-danger buyphone"><i class="am-icon-phone"></i> 电话咨询</a>
-					<a href="#" class="am-btn am-btn-warning buyurl"><i class="am-icon-external-link"></i> 详情信息</a>
-				</dd>
-				<dd class="detail"></dd>
-			</dl>
-			<!-- </div> -->
-		</div>
 	</div>
 
 
@@ -127,11 +126,24 @@
 			data: function () {
 				return {
 					krpano: null,
+					/* pano实例对象 */
 					showSlides: true,
+					/* 展示列表 */
 					showProduct: false,
+					/* 展示全部产品信息 */
+					showHotspotcontent: false,
+					/* 展示单个产品信息 */
 					selectSlide: 0,
+					/* 选中的场景 */
 					fullscreen: false,
+					/* 全屏 */
+					playsound: true,
+					/* 播放音乐 */
+
+					hotspotcontent: {},
+					/* 产品信息 */
 					swiperOption: {
+						/* swiper配置 */
 						grabCursor: true,
 						keyboard: {
 							enabled: true,
@@ -140,9 +152,19 @@
 						centeredSlides: false,
 						spaceBetween: 0,
 						mousewheel: true,
-
+					},
+					swiperOptionText: {
+						/* swiper配置 */
+						direction: 'vertical',
+						slidesPerView: 'auto',
+						freeMode: true,
+						scrollbar: {
+							el: '.swiper-scrollbar',
+						},
+						mousewheel: true,
 					},
 					swiperSlides: [{
+						/* 场景列表 */
 						img: './assets/imgs/img_1_8.png',
 						title: '1尔特瑞特瑞特人股份恢复规划1',
 						dec: '1咖啡缝额放电饭锅电饭锅电饭锅童咖啡缝额放电饭锅电饭锅电饭锅电饭锅儿童咖啡缝额放电饭锅电饭锅电饭锅电饭锅儿童咖啡缝额放电饭锅电啡缝额放电饭锅电饭锅电饭锅电饭锅儿童咖啡缝额放电饭锅电饭锅电饭锅电饭锅儿童',
@@ -161,11 +183,20 @@
 					this.krpano.call("loadscene('scene_" + id + "',null,MERGE,BLEND(1));");
 
 				},
+				playsoundHandle: function () {
+					if (this.playsound) {
+						this.playsound = false;
+						this.krpano.call("pausesound()");
+					} else {
+						this.playsound = true;
+						this.krpano.call("playsound()");
+					}
+				},
 				getSlides: function () {
 					var _this = this;
 					$.ajax({
 						type: "POST",
-						url: 'http://pano.test.weapi.org/panoajax?ugi=panugi&action=selectPanoList&moduleid=aeac70c2f4ad43748c2ff69ba79b0f2c&panoramicid=afc71dc7764c45beb7af22e241b2b368', //c3a284be40f94595ba93ce6f08433d02 afc71dc7764c45beb7af22e241b2b368
+						url: 'http://pano.test.weapi.org/panoajax?ugi=panugi&action=selectPanoList&moduleid=aeac70c2f4ad43748c2ff69ba79b0f2c&panoramicid=c3a284be40f94595ba93ce6f08433d02', //c3a284be40f94595ba93ce6f08433d02 afc71dc7764c45beb7af22e241b2b368
 						dataType: "jsonp",
 						xhrFields: {
 							withCredentials: true
@@ -259,7 +290,7 @@
 
 				embedpano({
 					swf: "/krpano.swf",
-					xml: "http://pano.test.weapi.org/pano/afc71dc7764c45beb7af22e241b2b368/tour.xml?r=" + Math.random(),
+					xml: "http://pano.test.weapi.org/pano/c3a284be40f94595ba93ce6f08433d02/tour.xml?r=" + Math.random(),
 					target: "pano",
 					html5: "auto",
 					basepath: 'http://pano.test.weapi.org/statics/pano/',
@@ -279,20 +310,15 @@
 				}
 			},
 		})
-		console.log(app)
-
-		var myScroll;
-
-		function loaded() {
-			// myScroll = new iScroll('wrapper');
+		/* 切换场景时触发 */
+		window.pano_onLoadScene = function (sceneid) {
+			for (var i = 0; i < app.swiperSlides.length; i++) {
+				var item = app.swiperSlides[i];
+				if (item.sceneid.indexOf(sceneid) > -1) {
+					app.selectSlide = i;
+				}
+			}
 		}
-		document.addEventListener('touchmove', function (e) {
-			if ($(e.target).parents(".touchable").length > 0)
-				return;
-
-			e.preventDefault();
-		}, false);
-		document.addEventListener('DOMContentLoaded', function () { setTimeout(loaded, 200); }, false);
 
 		function isWeixin() {
 			var ua = navigator.userAgent.toLowerCase();
@@ -316,59 +342,30 @@
 	</script>
 	<script>
 		// Productshow
-		;
-		(function () {
-			var productshowMask = $("#productshow_mask");
-			var productshow = $("#productshow");
-
-			productshow.find(".close").click(function () {
-				productshow.hide();
-				productshowMask.hide();
-			});
-
-			function buildProductShow(data) {
-				productshow.find(".title").html(data.productname);
-				productshow.find(".detail").html(data.intro);
-
-				if (!data.imgurl || data.imgurl_enable != 1)
-					productshow.find("dt").hide();
-				else
-					productshow.find("dt").css("background-image", "url(" + data.imgurl + ")").show();
-
-				if (data.buyurl)
-					productshow.find(".op .buyurl").attr("href", data.buyurl);
-				else
-					productshow.find(".op .buyurl").hide();
-
-				if (data.buyphone)
-					productshow.find(".op .buyphone").attr("href", "tel:" + data.buyphone).show();
-				else
-					productshow.find(".op .buyphone").hide();
-
-				/* productshowMask.show(); */
-				productshow.show();
+		window.showProduct = function (productshowid) {
+			if (app.showHotspotcontent) {
+				app.showHotspotcontent = false;
+				return
 			}
-
-			window.showProduct = function (productshowid) {
-				$.ajax({
-					type: "POST",
-					url: "http://pano.test.weapi.org/panoajax?ugi=hotspotcontent&action=get&moduleid=aeac70c2f4ad43748c2ff69ba79b0f2c&contentid=" + productshowid,
-					dataType: "jsonp",
-					xhrFields: {
-						withCredentials: true
-					},
-					async: true,
-					crossDomain: true,
-					success: function (res) {
-						if (res.code != "A00006") {
-							alert("产品信息加载失败，请稍后再试。");
-						} else {
-							buildProductShow(res);
-						}
+			$.ajax({
+				type: "POST",
+				url: "http://pano.test.weapi.org/panoajax?ugi=hotspotcontent&action=get&moduleid=aeac70c2f4ad43748c2ff69ba79b0f2c&contentid=" + productshowid,
+				dataType: "jsonp",
+				xhrFields: {
+					withCredentials: true
+				},
+				async: true,
+				crossDomain: true,
+				success: function (res) {
+					if (res.code != "A00006") {
+						alert("产品信息加载失败，请稍后再试。");
+					} else {
+						app.hotspotcontent = res.hotspotcontent;
+						app.showHotspotcontent = true;
 					}
-				});
-			};
-		})();
+				}
+			});
+		};
 
 	</script>
 	<script>
@@ -396,46 +393,6 @@
 				window.showProduct(contentid);
 			}
 		};
-
-		// CustomMenu
-		/* $(function () {
-			$(".menuText").click(function () {
-				var content = $(this).attr("content");
-				$("#jx_box_content").find("div").html(content);
-				$("#jx_box").show();
-			})
-			$("#jx_box_close").click(function () {
-				$("#jx_box_content").find("div").html("内容正在载入中，请稍后...");
-				$("#jx_box").hide();
-			})
-		}) */
-
-		/* function displayit(n) {
-			for (i = 0; i < 4; i++) {
-				if (i == n) {
-					var id = 'menu_list' + n;
-					if (document.getElementById(id).style.display == 'none') {
-						document.getElementById(id).style.display = '';
-						document.getElementById("plug-wrap").style.display = 'block';
-					} else {
-						document.getElementById(id).style.display = 'none';
-						document.getElementById("plug-wrap").style.display = 'none';
-					}
-				} else {
-					if ($('#menu_list' + i)) {
-						$('#menu_list' + i).css('display', 'none');
-					}
-				}
-			}
-		} */
-
-		/* function closeall() {
-			var count = document.getElementById("top_menu").getElementsByTagName("ul").length;
-			for (i = 0; i < count; i++) {
-				document.getElementById("top_menu").getElementsByTagName("ul").item(i).style.display = 'none';
-			}
-			document.getElementById("plug-wrap").style.display = 'none';
-		} */
 
 	</script>
 
