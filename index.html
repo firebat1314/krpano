@@ -5,7 +5,7 @@
 	<title>测试1</title>
 	<!-- <base href="http://pano.test.weapi.org" /> -->
 	<meta name="description" content="测试1" />
-	<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, minimal-ui, user-scalable=no" />
+	<meta name="viewport" content="target-densitydpi=device-dpi,width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, minimal-ui, user-scalable=no" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="format-detection" content="telephone=no" />
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -34,7 +34,7 @@
 				<span>返回</span>
 			</div>
 			<div class="right-fullscreen-site">
-				<img src="./assets/imgs/img_1_9.png" draggable="false">
+				<img @click="toggleFullscreen" src="./assets/imgs/img_1_9.png" draggable="false">
 				<img src="./assets/imgs/img_1_10.png" draggable="false">
 			</div>
 			<div class="bottom-tools" :class="{'hide':!showSlides}">
@@ -42,10 +42,10 @@
 					<div class="item" @click="showSlides = !showSlides" :class="{'active':showSlides}">
 						<img src="./assets/imgs/img_1_4.png" draggable="false">
 					</div>
-					<div class="item">
+					<div @click="preView" class="item">
 						<img src="./assets/imgs/img_1_11.png" draggable="false">
 					</div>
-					<div class="item">
+					<div @click="nextView" class="item">
 						<img src="./assets/imgs/img_1_5.png" draggable="false">
 					</div>
 					<div class="item">
@@ -108,15 +108,29 @@
 	<script src="/assets/js/swiper/swiper.min.js"></script>
 	<script src="/assets/js/vue.min.js"></script>
 	<script src="/assets/js/vue-awesome-swiper.js"></script>
+
+	
+	<script>
+		function GetQueryString(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null) return unescape(r[2]);
+			return null;
+		}
+
+	</script>
+
 	<script>
 		Vue.use(window.VueAwesomeSwiper)
 		var app = new Vue({
 			el: '#app',
 			data: function () {
 				return {
+					krpano:null,
 					showSlides: true,
 					showProduct: false,
 					selectSlide: 0,
+					fullscreen:false,
 					swiperOption: {
 						grabCursor: true,
 						keyboard: {
@@ -141,42 +155,109 @@
 				clickSlide: function (index) {
 					if (this.selectSlide != index) {}
 					this.selectSlide = index;
+				},
+				getSlides: function () {
+					var _this = this;
+					$.ajax({
+						type: "POST",
+						url: 'http://pano.test.weapi.org/panoajax?ugi=panugi&action=selectPanoList&moduleid=aeac70c2f4ad43748c2ff69ba79b0f2c&panoramicid=afc71dc7764c45beb7af22e241b2b368',
+						dataType: "jsonp",
+						xhrFields: {
+							withCredentials: true
+						},
+						async: true,
+						crossDomain: true,
+						success: function (res) {
+							var urlSearchId = GetQueryString("sceneid");
+							if (res.code === "A00006") {
+								var arr = [];
+								for (var i = 0; i < res.scenes.length; i++) {
+									var item = res.scenes[i];
+									if (urlSearchId) {
+										if (item.url.indexOf(urlSearchId) > -1) {
+											_this.selectSlide = i;
+										}
+									};
+									arr.push({
+										img: item.image,
+										title: item.title,
+										i_url: item.url,
+										url: '',
+										dec: ''
+									})
+								}
+								_this.swiperSlides = arr;
+							}
+						}
+					});
+				},
+				toggleFullscreen:function(){
+					// this.fullscreen = !this.fullscreen;
+					this.krpano.set('fullscreen',true);
+				},
+				preView:function(){
+					this.krpano.call("loadpano('http://pano.test.weapi.org/pano/afc71dc7764c45beb7af22e241b2b368/tour.xml',null,MERGE,BLEND(1));");
+				},
+				nextView:function(){
+					this.krpano.call("loadpano('http://pano.test.weapi.org/pano/c3a284be40f94595ba93ce6f08433d02/tour.xml',null,MERGE,BLEND(1));");
 				}
+
 			},
 			mounted: function () {
 				var _this = this;
-				$.ajax({
-					type: "POST",
-					url: 'http://pano.test.weapi.org/panoajax?ugi=panugi&action=selectPanoList&moduleid=aeac70c2f4ad43748c2ff69ba79b0f2c&panoramicid=afc71dc7764c45beb7af22e241b2b368',
-					dataType: "jsonp",
-					xhrFields: {
-						withCredentials: true
-					},
-					async: true,
-					crossDomain: true,
-					success: function (res) {
-						var urlSearchId = GetQueryString("id");
-						if (res.code === "A00006") {
-							var arr = [];
-							for (var i = 0; i < res.scenes.length; i++) {
-								var item = res.scenes[i];
-								if (urlSearchId) {
-									if (item.url.indexOf(urlSearchId) > -1) {
-										_this.selectSlide = i;
-									}
-								};
-								arr.push({
-									img: item.image,
-									title: item.title,
-									i_url: item.url,
-									url: '',
-									dec: ''
-								})
-							}
-							_this.swiperSlides = arr;
-						}
+				this.getSlides();
+
+
+				var dbbtest = location.href.indexOf("dbbtest") > 0;
+				var ua = navigator.userAgent;
+				var isAndroid = navigator.userAgent.match(/Android/i) != null;
+				var isiPad = navigator.userAgent.match(/iPad/i) != null;
+				var isiPhone = navigator.userAgent.match(/iPhone/i) != null;
+				var winWidths = $(window).width();
+
+				var densityDpi = 1;
+				if (isAndroid) {
+					var DEFAULT_DPI = 375;
+					densityDpi = DEFAULT_DPI / winWidths;
+					densityDpi = densityDpi > 1 ? 300 * DEFAULT_DPI * densityDpi / DEFAULT_DPI : densityDpi;
+
+					if (isWeixin() && isAndroid) {
+						var viewport = document.querySelector("meta[name=viewport]");
+						viewport.setAttribute('content', 'width=375, target-densityDpi=' + densityDpi);
+						if (dbbtest)
+							alert("densityDpi=" + densityDpi);
 					}
+				}
+
+				var initvars = {
+					densityDpi: densityDpi,
+				};
+
+				var sceneid = GetQueryString("sceneid");
+				if (sceneid) {
+					initvars.startscene = "scene_" + sceneid;
+				}
+
+				embedpano({
+					swf: "http://pano.test.weapi.org/statics/pano/krpano.swf",
+					xml: "http://pano.test.weapi.org/pano/afc71dc7764c45beb7af22e241b2b368/tour.xml?r=" + Math.random(),
+					target: "pano",
+					html5: "auto",
+					wmode:'transparent',
+					// html5:"only",
+					passQueryParameters: true,
+					initvars: initvars,
+					onready: krpano_onready_callback
 				});
+
+				function krpano_onready_callback(krpano_interface) {
+					_this.krpano = krpano_interface;
+					// _this.krpano.set('bgcolor','0Xffffff');
+					if (location.href.indexOf("dbbtest") > 0) {
+						_this.krpano.call("showlog()")
+					};
+					// krpano.call("loadpano('http://pano.test.weapi.org/pano/" + "c3a284be40f94595ba93ce6f08433d02" +"/tour.xml',null,MERGE,BLEND(1));");
+				}
 			},
 		})
 
@@ -186,7 +267,7 @@
 		function loaded() {
 			// myScroll = new iScroll('wrapper');
 		}
-		/* document.addEventListener('touchmove', function (e) {
+		document.addEventListener('touchmove', function (e) {
 			if ($(e.target).parents(".touchable").length > 0)
 				return;
 
@@ -211,61 +292,7 @@
 				$("body").removeClass("vr_fullscreen");
 				autoPanoSize(false);
 			}
-		} */
-
-	</script>
-	<script>
-		var dbbtest = location.href.indexOf("dbbtest") > 0;
-		var ua = navigator.userAgent;
-		var isAndroid = navigator.userAgent.match(/Android/i) != null;
-		var isiPad = navigator.userAgent.match(/iPad/i) != null;
-		var isiPhone = navigator.userAgent.match(/iPhone/i) != null;
-		var winWidths = $(window).width();
-
-		function GetQueryString(name) {
-			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-			var r = window.location.search.substr(1).match(reg);
-			if (r != null) return unescape(r[2]);
-			return null;
 		}
-
-		var densityDpi = 1;
-		if (isAndroid) {
-			var DEFAULT_DPI = 375;
-			densityDpi = DEFAULT_DPI / winWidths;
-			densityDpi = densityDpi > 1 ? 300 * DEFAULT_DPI * densityDpi / DEFAULT_DPI : densityDpi;
-
-			if (isWeixin() && isAndroid) {
-				var viewport = document.querySelector("meta[name=viewport]");
-				viewport.setAttribute('content', 'width=375, target-densityDpi=' + densityDpi);
-				if (dbbtest)
-					alert("densityDpi=" + densityDpi);
-			}
-		}
-
-		var initvars = {
-			densityDpi: densityDpi
-		};
-
-		var sceneid = GetQueryString("sceneid");
-		if (sceneid) {
-			initvars.startscene = "scene_" + sceneid;
-		}
-
-		embedpano({
-			swf: "http://pano.test.weapi.org/statics/pano/krpano.swf",
-			xml: "http://pano.test.weapi.org/pano/afc71dc7764c45beb7af22e241b2b368/tour.xml?r=" + Math.random(),
-			target: "pano",
-			html5: "auto",
-			// html5:"only",
-			// localfallback:'http://pano.test.weapi.org',
-			passQueryParameters: true,
-			initvars: initvars
-		});
-
-		var krpano = document.getElementById("krpanoSWFObject");
-		if (location.href.indexOf("dbbtest") > 0)
-			krpano.call("showlog();");
 
 	</script>
 	<script>
