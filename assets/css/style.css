@@ -223,8 +223,9 @@ em {
 /* —————————————————— app —————————————————— */
 #app {
 	height: 100%;
-	width: 100%;  position: absolute;
-    top: 0;
+	width: 100%;
+	position: absolute;
+	top: 0;
 }
 
 [v-cloak] {
@@ -295,9 +296,10 @@ em {
 	z-index: 1000000000;
 }
 
-.bottom-tools.hide{
+.bottom-tools.hide {
 	bottom: -130px;
 }
+
 .bottom-tools .bottom-tools-button-list {
 	display: flex;
 
@@ -318,7 +320,8 @@ em {
 .bottom-tools .bottom-tools-button-list .item:hover {
 	opacity: 1;
 }
-.bottom-tools .bottom-tools-button-list .item.active{
+
+.bottom-tools .bottom-tools-button-list .item.active {
 	opacity: 1;
 }
 
@@ -351,6 +354,7 @@ em {
 	overflow: hidden;
 	border: 2px solid transparent;
 	cursor: pointer;
+	border-radius: 5px;
 }
 
 .bottom-tools-slides .swiper-container .swiper-slide .inner-slide {
@@ -362,10 +366,9 @@ em {
 }
 
 .bottom-tools-slides .swiper-container .swiper-slide.active {
-	/* -webkit-transform: scale(1);
+	/* -webkit-transform: scale(1);*/
 	transform: scale(1);
-	border-radius: 5px; */
-	border: 2px solid #ffffff;
+	border: 2px solid #FDD68F;
 }
 
 .bottom-tools-slides .swiper-container .swiper-slide.active .title:hover {

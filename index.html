@@ -73,14 +73,14 @@
 		<div id="box" style="top: 80px;">
 			<ul></ul>
 		</div>
-		<div id="jx_box">
+		<!-- <div id="jx_box">
 			<div id="wrapper">
 				<div id="jx_box_content">
 					<div class="touchable" style="height: 100%;overflow:auto;width:100%;padding: 5%; text-align:center;">内容正在载入中，请稍后...</div>
 				</div>
 			</div>
 			<div id="jx_box_close"></div>
-		</div>
+		</div> -->
 
 		<div id="productshow_mask"></div>
 		<div id="productshow">
@@ -109,7 +109,7 @@
 	<script src="/assets/js/vue.min.js"></script>
 	<script src="/assets/js/vue-awesome-swiper.js"></script>
 
-	
+
 	<script>
 		function GetQueryString(name) {
 			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
@@ -126,11 +126,11 @@
 			el: '#app',
 			data: function () {
 				return {
-					krpano:null,
+					krpano: null,
 					showSlides: true,
 					showProduct: false,
 					selectSlide: 0,
-					fullscreen:false,
+					fullscreen: false,
 					swiperOption: {
 						grabCursor: true,
 						keyboard: {
@@ -153,14 +153,19 @@
 			},
 			methods: {
 				clickSlide: function (index) {
-					if (this.selectSlide != index) {}
+					if (this.selectSlide == index) {
+						return
+					}
 					this.selectSlide = index;
+					var id = this.swiperSlides[index].sceneid;
+					this.krpano.call("loadscene('scene_" + id + "',null,MERGE,BLEND(1));");
+
 				},
 				getSlides: function () {
 					var _this = this;
 					$.ajax({
 						type: "POST",
-						url: 'http://pano.test.weapi.org/panoajax?ugi=panugi&action=selectPanoList&moduleid=aeac70c2f4ad43748c2ff69ba79b0f2c&panoramicid=afc71dc7764c45beb7af22e241b2b368',
+						url: 'http://pano.test.weapi.org/panoajax?ugi=panugi&action=selectPanoList&moduleid=aeac70c2f4ad43748c2ff69ba79b0f2c&panoramicid=afc71dc7764c45beb7af22e241b2b368', //c3a284be40f94595ba93ce6f08433d02 afc71dc7764c45beb7af22e241b2b368
 						dataType: "jsonp",
 						xhrFields: {
 							withCredentials: true
@@ -174,7 +179,7 @@
 								for (var i = 0; i < res.scenes.length; i++) {
 									var item = res.scenes[i];
 									if (urlSearchId) {
-										if (item.url.indexOf(urlSearchId) > -1) {
+										if (item.sceneid.indexOf(urlSearchId) > -1) {
 											_this.selectSlide = i;
 										}
 									};
@@ -182,6 +187,7 @@
 										img: item.image,
 										title: item.title,
 										i_url: item.url,
+										sceneid: item.sceneid,
 										url: '',
 										dec: ''
 									})
@@ -191,15 +197,27 @@
 						}
 					});
 				},
-				toggleFullscreen:function(){
+				toggleFullscreen: function () {
 					// this.fullscreen = !this.fullscreen;
-					this.krpano.set('fullscreen',true);
+					this.krpano.set('fullscreen', true);
 				},
-				preView:function(){
-					this.krpano.call("loadpano('http://pano.test.weapi.org/pano/afc71dc7764c45beb7af22e241b2b368/tour.xml',null,MERGE,BLEND(1));");
+				preView: function () {
+					if (this.selectSlide <= 0) {
+						this.selectSlide = this.swiperSlides.length - 1;
+					} else {
+						this.selectSlide--;
+					}
+
+					this.krpano.call("loadscene('scene_" + this.swiperSlides[this.selectSlide].sceneid + "',null,MERGE,BLEND(1));");
 				},
-				nextView:function(){
-					this.krpano.call("loadpano('http://pano.test.weapi.org/pano/c3a284be40f94595ba93ce6f08433d02/tour.xml',null,MERGE,BLEND(1));");
+				nextView: function () {
+					if (this.selectSlide >= this.swiperSlides.length - 1) {
+						this.selectSlide = 0;
+					} else {
+						this.selectSlide++;
+					}
+
+					this.krpano.call("loadscene('scene_" + this.swiperSlides[this.selectSlide].sceneid + "',null,MERGE,BLEND(1));");
 				}
 
 			},
@@ -231,6 +249,7 @@
 
 				var initvars = {
 					densityDpi: densityDpi,
+					// mypath:'http://pano.test.weapi.org/statics/pano/'
 				};
 
 				var sceneid = GetQueryString("sceneid");
@@ -239,28 +258,28 @@
 				}
 
 				embedpano({
-					swf: "http://pano.test.weapi.org/statics/pano/krpano.swf",
+					swf: "/krpano.swf",
 					xml: "http://pano.test.weapi.org/pano/afc71dc7764c45beb7af22e241b2b368/tour.xml?r=" + Math.random(),
 					target: "pano",
 					html5: "auto",
-					wmode:'transparent',
+					basepath: 'http://pano.test.weapi.org/statics/pano/',
+					wmode: 'transparent',
 					// html5:"only",
 					passQueryParameters: true,
 					initvars: initvars,
-					onready: krpano_onready_callback
+					onready: krpano_onready_callback,
+					// consolelog: false
 				});
 
 				function krpano_onready_callback(krpano_interface) {
 					_this.krpano = krpano_interface;
-					// _this.krpano.set('bgcolor','0Xffffff');
 					if (location.href.indexOf("dbbtest") > 0) {
 						_this.krpano.call("showlog()")
 					};
-					// krpano.call("loadpano('http://pano.test.weapi.org/pano/" + "c3a284be40f94595ba93ce6f08433d02" +"/tour.xml',null,MERGE,BLEND(1));");
 				}
 			},
 		})
-
+		console.log(app)
 
 		var myScroll;
 
@@ -331,13 +350,23 @@
 			}
 
 			window.showProduct = function (productshowid) {
-				$.get("/m/pano/ajax/productshow?moduleid=aeac70c2f4ad43748c2ff69ba79b0f2c&productshowid=" + productshowid, function (result) {
-					if (result.code != "A00006") {
-						alert("产品信息加载失败，请稍后再试。");
-					} else {
-						buildProductShow(result);
+				$.ajax({
+					type: "POST",
+					url: "http://pano.test.weapi.org/panoajax?ugi=hotspotcontent&action=get&moduleid=aeac70c2f4ad43748c2ff69ba79b0f2c&contentid=" + productshowid,
+					dataType: "jsonp",
+					xhrFields: {
+						withCredentials: true
+					},
+					async: true,
+					crossDomain: true,
+					success: function (res) {
+						if (res.code != "A00006") {
+							alert("产品信息加载失败，请稍后再试。");
+						} else {
+							buildProductShow(res);
+						}
 					}
-				}, 'json');
+				});
 			};
 		})();
 
@@ -362,9 +391,9 @@
 		// Pano User Callback
 		window.showContent = function (contenttype, contentid) { // contenttype: SHOWPRODUCT/CONTENT
 			if (contenttype == "product") {
-				window.showProduct(contentid);
+				// window.showProduct(contentid);
 			} else {
-				alert("showContent, contenttype=" + contenttype + " contentid=" + contentid);
+				window.showProduct(contentid);
 			}
 		};
 
